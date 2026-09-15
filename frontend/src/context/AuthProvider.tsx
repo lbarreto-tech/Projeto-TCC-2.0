@@ -88,7 +88,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
     const found = MOCK_USERS.find((u) => u.email === email && u.senha === senha);
     if (!found) {
-      throw new Error("E-mail ou senha invalidos");
+      throw new Error("E-mail ou senha inválidos");
     }
 
     const { senha: _senha, ...user } = found;

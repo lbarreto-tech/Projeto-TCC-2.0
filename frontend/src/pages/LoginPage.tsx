@@ -1,65 +1,41 @@
-import { useState, type FormEvent } from "react";
-import { useAuth } from "../hooks/useAuth";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import LoginForm from "../components/LoginForm";
+import { useAuth } from "../hooks/useAuth";
+import { getApiErrorMessage } from "../services/apiClient";
+import type { LoginRequest } from "../types/auth";
 
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
+  async function handleSubmit({ email, senha }: LoginRequest) {
     setError("");
     setLoading(true);
 
     try {
       await login(email, senha);
-      navigate("/inicio");
+      navigate("/inicio", { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao fazer login");
+      setError(
+        getApiErrorMessage(err, "Não foi possível entrar. Tente novamente."),
+      );
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div style={{ maxWidth: 400, margin: "100px auto", padding: 20 }}>
+    <div style={{ maxWidth: 400, margin: "80px auto", padding: 20 }}>
       <h1>Login</h1>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: 12 }}>
-          <label htmlFor="email">E-mail</label>
-          <br />
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{ width: "100%", padding: 8 }}
-          />
-        </div>
-        <div style={{ marginBottom: 12 }}>
-          <label htmlFor="senha">Senha</label>
-          <br />
-          <input
-            id="senha"
-            type="password"
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-            required
-            style={{ width: "100%", padding: 8 }}
-          />
-        </div>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <button type="submit" disabled={loading} style={{ padding: "8px 16px" }}>
-          {loading ? "Entrando..." : "Entrar"}
-        </button>
-      </form>
+      <p style={{ marginBottom: 20 }}>Acesse o Sistema de Agendamento Escolar.</p>
+
+      <LoginForm error={error} loading={loading} onSubmit={handleSubmit} />
+
       <div style={{ marginTop: 24, fontSize: 14, color: "#666" }}>
-        <p><strong>Usuarios mockados:</strong></p>
+        <p><strong>Usuários de teste</strong></p>
         <p>Admin: admin@escola.com / admin123</p>
         <p>Professor: joao@escola.com / joao123</p>
       </div>
